@@ -13,7 +13,7 @@ export type Field = {
   list?: boolean;
 };
 
-type Row = Record<string, any>;
+type Row = any;
 type Table = "hero_slides" | "garment_types" | "techniques" | "products" | "categories";
 
 export function CrudSection({ table, title, fields, defaults }: { table: Table; title: string; fields: Field[]; defaults: Row }) {
@@ -43,7 +43,7 @@ export function CrudSection({ table, title, fields, defaults }: { table: Table; 
       ? await supabase.from(table).update(payload as never).eq("id", id)
       : await supabase.from(table).insert(payload as never);
     setSaving(false);
-    if (res.error) return toast.error(res.error.message);
+    if (res.error) return void toast.error(res.error.message);
     toast.success("Tersimpan");
     setEdit(null);
     load();
@@ -52,7 +52,7 @@ export function CrudSection({ table, title, fields, defaults }: { table: Table; 
   async function remove(id: string) {
     if (!confirm("Hapus data ini?")) return;
     const { error } = await supabase.from(table).delete().eq("id", id);
-    if (error) return toast.error(error.message);
+    if (error) return void toast.error(error.message);
     toast.success("Dihapus");
     load();
   }

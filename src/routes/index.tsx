@@ -35,6 +35,7 @@ function Index() {
   const s = data.settings;
   const phone = s?.whatsapp ?? "";
   const name = s?.store_name ?? "Selene Apparel";
+  const T = data.texts as any;
   const [open, setOpen] = useState(false);
   const catName = (id: string | null) => data.categories.find((c) => c.id === id)?.name ?? "";
 
@@ -70,10 +71,10 @@ function Index() {
         )}
       </header>
 
-      <HeroSlider slides={data.slides} phone={phone} badge={data.texts.hero_badge} />
+      <HeroSlider slides={data.slides} phone={phone} badge={T.hero_badge} />
 
       <section id="katalog" className="mx-auto max-w-7xl px-4 py-20">
-        <SectionHead eyebrow="Katalog" title={data.texts.catalog_title ?? "Katalog Pilihan"} sub={data.texts.catalog_subtitle} />
+        <SectionHead eyebrow="Katalog" title={T.catalog_title ?? "Katalog Pilihan"} sub={T.catalog_subtitle} />
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {data.products.map((p) => (
             <article key={p.id} className="group overflow-hidden rounded-2xl border bg-card shadow-sm transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg">
@@ -115,7 +116,7 @@ function Index() {
         <SectionHead eyebrow="Teknik Cetak" title="Sablon & Bordir" sub="Teknik aplikasi desain yang kami kuasai." />
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {data.techniques.map((t, i) => {
-            const Icon = [Palette, Sparkles, PenTool, Scissors][i % 4];
+            const Icon = [Palette, Sparkles, PenTool, Scissors][i % 4]!;
             return (
               <div key={t.id} className="rounded-2xl border bg-card p-6 transition hover:border-primary/50 hover:shadow-md">
                 <div className="grid h-12 w-12 place-items-center rounded-xl bg-accent text-primary"><Icon className="h-6 w-6" /></div>
@@ -133,8 +134,8 @@ function Index() {
           <div className="grid items-center gap-8 md:grid-cols-[1.5fr_1fr]">
             <div>
               <p className="text-sm font-semibold uppercase tracking-widest text-primary">Konsultasi Desain & Penawaran Kustom</p>
-              <h2 className="mt-3 text-3xl font-semibold md:text-4xl">{data.texts.consult_title}</h2>
-              <p className="mt-4 max-w-xl opacity-80">{data.texts.consult_body}</p>
+              <h2 className="mt-3 text-3xl font-semibold md:text-4xl">{T.consult_title}</h2>
+              <p className="mt-4 max-w-xl opacity-80">{T.consult_body}</p>
             </div>
             <div className="md:text-right">
               <a href={waLink(phone, "Halo, saya ingin kirim mockup desain dan minta penawaran.")} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-4 font-semibold text-primary-foreground transition hover:bg-primary-strong">
@@ -172,7 +173,7 @@ function Index() {
           <div>
             <h3 className="text-2xl font-semibold">{name}</h3>
             <p className="mt-1 text-sm text-primary">{s?.tagline}</p>
-            <p className="mt-4 text-sm text-muted-foreground">{data.texts.footer_about}</p>
+            <p className="mt-4 text-sm text-muted-foreground">{T.footer_about}</p>
           </div>
           <ul className="space-y-3 text-sm">
             <li className="flex gap-3"><MapPin className="h-5 w-5 shrink-0 text-primary" />{s?.address}</li>
@@ -195,7 +196,7 @@ function Index() {
   );
 }
 
-function SectionHead({ eyebrow, title, sub }: { eyebrow: string; title: string; sub?: string }) {
+function SectionHead({ eyebrow, title, sub }: { eyebrow: string; title: string; sub?: string | undefined }) {
   return (
     <div className="mb-10 max-w-2xl">
       <p className="text-sm font-semibold uppercase tracking-widest text-primary">{eyebrow}</p>
@@ -207,7 +208,7 @@ function SectionHead({ eyebrow, title, sub }: { eyebrow: string; title: string; 
 
 type Slide = { id: string; title: string; description: string; image_url: string; cta_label: string; cta_link: string };
 
-function HeroSlider({ slides, phone, badge }: { slides: Slide[]; phone: string; badge?: string }) {
+function HeroSlider({ slides, phone, badge }: { slides: Slide[]; phone: string; badge?: string | undefined }) {
   const [i, setI] = useState(0);
   const n = slides.length;
   useEffect(() => {
