@@ -80,9 +80,9 @@ export function OrdersPanel() {
     await supabase.from("orders").delete().eq("id", id); load();
   }
   async function add() {
-    if (!form?.customer_name?.trim()) return toast.error("Nama pemesan wajib diisi");
+    if (!form?.customer_name?.trim()) return void toast.error("Nama pemesan wajib diisi");
     const { error } = await supabase.from("orders").insert({ customer_name: form.customer_name.trim(), phone: form.phone ?? "", product: form.product ?? "", quantity: Number(form.quantity) || 1, notes: form.notes ?? "", status: "pending" });
-    if (error) return toast.error(error.message);
+    if (error) return void toast.error(error.message);
     toast.success("Pesanan ditambahkan"); setForm(null); load();
   }
   function exportCsv() {
@@ -156,22 +156,22 @@ export function AccountPanel({ email }: { email: string }) {
 
   async function updEmail(e: React.FormEvent) {
     e.preventDefault();
-    if (!/^\S+@\S+\.\S+$/.test(newEmail)) return toast.error("Format email tidak valid");
+    if (!/^\S+@\S+\.\S+$/.test(newEmail)) return void toast.error("Format email tidak valid");
     setBusyE(true);
     const { error } = await supabase.auth.updateUser({ email: newEmail.trim() });
     setBusyE(false);
-    if (error) return toast.error(error.message);
+    if (error) return void toast.error(error.message);
     toast.success("Permintaan ganti email dikirim. Cek kotak masuk email baru untuk konfirmasi.");
     setNewEmail("");
   }
   async function updPw(e: React.FormEvent) {
     e.preventDefault();
-    if (pw.length < 6) return toast.error("Password minimal 6 karakter");
-    if (pw !== pw2) return toast.error("Konfirmasi password tidak cocok");
+    if (pw.length < 6) return void toast.error("Password minimal 6 karakter");
+    if (pw !== pw2) return void toast.error("Konfirmasi password tidak cocok");
     setBusyP(true);
     const { error } = await supabase.auth.updateUser({ password: pw });
     setBusyP(false);
-    if (error) return toast.error(error.message);
+    if (error) return void toast.error(error.message);
     toast.success("Password berhasil diperbarui");
     setPw(""); setPw2("");
   }

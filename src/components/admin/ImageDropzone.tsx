@@ -13,15 +13,15 @@ export function ImageDropzone({ value, onChange }: { value: string; onChange: (u
   const [picked, setPicked] = useState<string | null>(null);
 
   async function upload(file: File) {
-    if (!TYPES.includes(file.type)) return toast.error("Format harus JPG, PNG, atau WEBP");
-    if (file.size > MAX) return toast.error("Ukuran maksimal 5MB");
+    if (!TYPES.includes(file.type)) return void toast.error("Format harus JPG, PNG, atau WEBP");
+    if (file.size > MAX) return void toast.error("Ukuran maksimal 5MB");
     setBusy(true);
     const path = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.\-_]/g, "_")}`;
     const { error } = await supabase.storage.from("site-images").upload(path, file, { contentType: file.type });
-    if (error) { setBusy(false); return toast.error("Gagal mengunggah: " + error.message); }
+    if (error) { setBusy(false); return void toast.error("Gagal mengunggah: " + error.message); }
     const { data, error: e2 } = await supabase.storage.from("site-images").createSignedUrl(path, 60 * 60 * 24 * 365 * 10);
     setBusy(false);
-    if (e2 || !data) return toast.error("Gagal membuat tautan gambar");
+    if (e2 || !data) return void toast.error("Gagal membuat tautan gambar");
     setPicked(file.name);
     onChange(data.signedUrl);
     toast.success("Gambar berhasil diunggah");
