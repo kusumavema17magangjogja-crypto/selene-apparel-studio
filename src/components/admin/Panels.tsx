@@ -11,7 +11,18 @@ export function StorePanel() {
   const [saving, setSaving] = useState(false);
   useEffect(() => { supabase.from("store_settings").select("*").eq("id", 1).maybeSingle().then(({ data }) => setS(data ?? { id: 1 })); }, []);
   if (!s) return <Loader2 className="animate-spin text-primary" />;
-  const fields: [string, string][] = [["store_name", "Nama Toko"], ["tagline", "Tagline"], ["whatsapp", "Nomor WhatsApp (format 62...)"], ["address", "Alamat"], ["hours", "Jam Operasional"], ["email", "Email"], ["instagram", "Instagram"]];
+  const fields: [string, string][] = [
+    ["store_name", "Nama Toko"],
+    ["tagline", "Tagline"],
+    ["whatsapp", "Nomor WhatsApp (format 62...)"],
+    ["address", "Alamat"],
+    ["hours", "Jam Operasional"],
+    ["email", "Email"],
+    ["instagram", "Instagram (@username atau URL)"],
+    ["tiktok", "TikTok (@username atau URL)"],
+    ["facebook", "Facebook (nama halaman atau URL)"],
+    ["youtube", "YouTube (@channel atau URL)"],
+  ];
   async function save() {
     setSaving(true);
     const { error } = await supabase.from("store_settings").upsert({ ...(s as any), id: 1, updated_at: new Date().toISOString() });
