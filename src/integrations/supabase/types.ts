@@ -203,35 +203,44 @@ export type Database = {
         Row: {
           address: string
           email: string
+          facebook: string
           hours: string
           id: number
           instagram: string
           store_name: string
           tagline: string
+          tiktok: string
           updated_at: string
           whatsapp: string
+          youtube: string
         }
         Insert: {
           address?: string
           email?: string
+          facebook?: string
           hours?: string
           id?: number
           instagram?: string
           store_name?: string
           tagline?: string
+          tiktok?: string
           updated_at?: string
           whatsapp?: string
+          youtube?: string
         }
         Update: {
           address?: string
           email?: string
+          facebook?: string
           hours?: string
           id?: number
           instagram?: string
           store_name?: string
           tagline?: string
+          tiktok?: string
           updated_at?: string
           whatsapp?: string
+          youtube?: string
         }
         Relationships: []
       }
