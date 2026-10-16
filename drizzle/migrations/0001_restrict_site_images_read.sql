@@ -1,0 +1,2 @@
+DROP POLICY IF EXISTS "public read site-images" ON storage.objects;
+CREATE POLICY "admin read site-images" ON storage.objects FOR SELECT TO authenticated USING (bucket_id = 'site-images' AND has_role(auth.uid(), 'admin'::app_role));
