@@ -174,6 +174,25 @@ function Index() {
             <h3 className="text-2xl font-semibold">{name}</h3>
             <p className="mt-1 text-sm text-primary">{s?.tagline}</p>
             <p className="mt-4 text-sm text-muted-foreground">{T.footer_about}</p>
+            {(() => {
+              const socials = [
+                ["Instagram", socialUrl(s?.instagram, "instagram"), <Instagram key="i" className="h-5 w-5" />],
+                ["TikTok", socialUrl(s?.tiktok, "tiktok"), <TikTokIcon key="t" className="h-5 w-5" />],
+                ["Facebook", socialUrl(s?.facebook, "facebook"), <Facebook key="f" className="h-5 w-5" />],
+                ["YouTube", socialUrl(s?.youtube, "youtube"), <Youtube key="y" className="h-5 w-5" />],
+              ] as [string, string, React.ReactNode][];
+              const shown = socials.filter(([, href]) => href);
+              if (!shown.length) return null;
+              return (
+                <div className="mt-5 flex gap-3">
+                  {shown.map(([label, href, icon]) => (
+                    <a key={label} href={href} target="_blank" rel="noreferrer" aria-label={label} title={label} className="grid h-10 w-10 place-items-center rounded-full border bg-card text-muted-foreground transition hover:border-primary hover:bg-accent hover:text-primary">
+                      {icon}
+                    </a>
+                  ))}
+                </div>
+              );
+            })()}
           </div>
           <ul className="space-y-3 text-sm">
             <li className="flex gap-3"><MapPin className="h-5 w-5 shrink-0 text-primary" />{s?.address}</li>
