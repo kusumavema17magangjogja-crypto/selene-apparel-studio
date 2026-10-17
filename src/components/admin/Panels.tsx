@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Loader2, Download, Eye, EyeOff, Plus, Trash2 } from "lucide-react";
+import { Loader2, Download, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -157,61 +157,4 @@ export function OrdersPanel() {
   );
 }
 
-export function AccountPanel({ email }: { email: string }) {
-  const [newEmail, setNewEmail] = useState("");
-  const [pw, setPw] = useState("");
-  const [pw2, setPw2] = useState("");
-  const [peek, setPeek] = useState(false);
-  const [busyE, setBusyE] = useState(false);
-  const [busyP, setBusyP] = useState(false);
-
-  async function updEmail(e: React.FormEvent) {
-    e.preventDefault();
-    if (!/^\S+@\S+\.\S+$/.test(newEmail)) return void toast.error("Format email tidak valid");
-    setBusyE(true);
-    const { error } = await supabase.auth.updateUser({ email: newEmail.trim() });
-    setBusyE(false);
-    if (error) return void toast.error(error.message);
-    toast.success("Permintaan ganti email dikirim. Cek kotak masuk email baru untuk konfirmasi.");
-    setNewEmail("");
-  }
-  async function updPw(e: React.FormEvent) {
-    e.preventDefault();
-    if (pw.length < 6) return void toast.error("Password minimal 6 karakter");
-    if (pw !== pw2) return void toast.error("Konfirmasi password tidak cocok");
-    setBusyP(true);
-    const { error } = await supabase.auth.updateUser({ password: pw });
-    setBusyP(false);
-    if (error) return void toast.error(error.message);
-    toast.success("Password berhasil diperbarui");
-    setPw(""); setPw2("");
-  }
-
-  return (
-    <div>
-      <h2 className="mb-6 text-2xl font-semibold">Pengaturan Akun</h2>
-      <div className="grid gap-6 lg:grid-cols-2">
-        <form onSubmit={updEmail} className="space-y-4 rounded-2xl border bg-card p-6">
-          <h3 className="text-lg font-semibold">Ganti Email</h3>
-          <div><label className="mb-1 block text-sm font-medium">Email aktif</label><input disabled value={email} className={inputCls} /></div>
-          <div><label className="mb-1 block text-sm font-medium">Email Baru</label><input type="email" required maxLength={255} value={newEmail} onChange={(e) => setNewEmail(e.target.value)} className={inputCls} /></div>
-          <button disabled={busyE} className={btnCls}>{busyE && <Loader2 className="h-4 w-4 animate-spin" />} Perbarui Email</button>
-        </form>
-        <form onSubmit={updPw} className="space-y-4 rounded-2xl border bg-card p-6">
-          <h3 className="text-lg font-semibold">Ganti Password</h3>
-          <div>
-            <label className="mb-1 block text-sm font-medium">Password Baru</label>
-            <div className="relative">
-              <input type={peek ? "text" : "password"} minLength={6} required value={pw} onChange={(e) => setPw(e.target.value)} className={`${inputCls} pr-10`} />
-              <button type="button" aria-label="Intip password" onClick={() => setPeek(!peek)} className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-primary">{peek ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</button>
-            </div>
-          </div>
-          <div><label className="mb-1 block text-sm font-medium">Konfirmasi Password Baru</label><input type={peek ? "text" : "password"} required value={pw2} onChange={(e) => setPw2(e.target.value)} className={inputCls} />
-            {pw2 && pw !== pw2 && <p className="mt-1 text-xs text-destructive">Password tidak cocok</p>}
-          </div>
-          <button disabled={busyP} className={btnCls}>{busyP && <Loader2 className="h-4 w-4 animate-spin" />} Simpan Password Baru</button>
-        </form>
-      </div>
-    </div>
-  );
-}
+export { AccountPanel } from "./AccountPanel";

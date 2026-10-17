@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Keep self-service email and password changes in the dedicated AccountPanel, using the signed-in auth client and current-password verification so account credentials never require privileged application code.
