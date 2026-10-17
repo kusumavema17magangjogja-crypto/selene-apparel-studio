@@ -10,3 +10,4 @@
 <!-- LOVABLE:END -->
 
 - Keep self-service email and password changes in the dedicated AccountPanel, using the signed-in auth client and current-password verification so account credentials never require privileged application code.
+- Keep order contact URL formatting in a browser-safe helper and store selected product names as order snapshots, so catalog changes do not rewrite historical orders.
