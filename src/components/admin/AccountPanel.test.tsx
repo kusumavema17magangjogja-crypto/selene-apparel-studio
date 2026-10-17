@@ -49,4 +49,22 @@ describe("Account changes", () => {
     expect(screen.getByLabelText("Email Baru")).toHaveValue("new@example.test");
     expect(screen.getByRole("button", { name: "Perbarui Email" })).toBeEnabled();
   });
+
+  it("explains a dead session instead of showing the raw auth error", async () => {
+    mocks.updateUser.mockResolvedValue({ error: { message: "Auth session missing!" } });
+    render(<AccountPanel email="admin@example.test" />);
+    fireEvent.change(screen.getByLabelText("Email Baru"), { target: { value: "new@example.test" } });
+    fireEvent.click(screen.getByRole("button", { name: "Perbarui Email" }));
+    await waitFor(() => expect(mocks.error).toHaveBeenCalledWith("Sesi Anda sudah tidak aktif. Silakan keluar lalu masuk lagi, lalu coba simpan kembali."));
+  });
+
+  it("explains a weak password rejection", async () => {
+    mocks.updateUser.mockResolvedValue({ error: { message: "Password is known to be weak and easy to guess, please choose a different one." } });
+    render(<AccountPanel email="admin@example.test" />);
+    fireEvent.change(screen.getByLabelText("Password Saat Ini"), { target: { value: "old-test-password" } });
+    fireEvent.change(screen.getByLabelText("Password Baru"), { target: { value: "new-test-password" } });
+    fireEvent.change(screen.getByLabelText("Konfirmasi Password Baru"), { target: { value: "new-test-password" } });
+    fireEvent.click(screen.getByRole("button", { name: "Simpan Password Baru" }));
+    await waitFor(() => expect(mocks.error).toHaveBeenCalledWith("Password terlalu mudah ditebak. Gunakan kombinasi huruf, angka, dan simbol yang unik."));
+  });
 });

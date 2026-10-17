@@ -6,6 +6,14 @@ import { Button } from "@/components/ui/button";
 
 const inputCls = "w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-primary disabled:bg-muted disabled:text-muted-foreground";
 
+// GoTrue returns raw English auth errors; translate the two the account forms
+// actually hit so the admin knows what to do next.
+export function describeAuthError(raw: string): string {
+  if (/session/i.test(raw)) return "Sesi Anda sudah tidak aktif. Silakan keluar lalu masuk lagi, lalu coba simpan kembali.";
+  if (/weak|easily guessed/i.test(raw)) return "Password terlalu mudah ditebak. Gunakan kombinasi huruf, angka, dan simbol yang unik.";
+  return raw;
+}
+
 export function AccountPanel({ email }: { email: string }) {
   const [newEmail, setNewEmail] = useState("");
   const [pendingEmail, setPendingEmail] = useState("");
@@ -24,7 +32,7 @@ export function AccountPanel({ email }: { email: string }) {
     setBusyEmail(true);
     try {
       const { data, error } = await supabase.auth.updateUser({ email: nextEmail });
-      if (error) return void toast.error(error.message);
+      if (error) return void toast.error(describeAuthError(error.message));
       if (data.user?.email?.toLowerCase() === nextEmail.toLowerCase()) {
         setPendingEmail("");
         toast.success("Email berhasil diperbarui");
@@ -48,7 +56,7 @@ export function AccountPanel({ email }: { email: string }) {
     setBusyPassword(true);
     try {
       const { error } = await supabase.auth.updateUser({ password, current_password: currentPassword });
-      if (error) return void toast.error(error.message);
+      if (error) return void toast.error(describeAuthError(error.message));
       toast.success("Password berhasil diperbarui");
       setCurrentPassword("");
       setPassword("");
