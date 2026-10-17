@@ -1,5 +1,5 @@
 # Roadmap
 
 - [x] Publikasikan pembaruan ke URL Lovable
-- [ ] Siapkan jalur deploy ke Vercel (butuh repo GitHub + env var dari pengguna)
-- [ ] Selidiki & perbaiki "auth session missing" yang masih muncul di situs
+- [x] Selidiki & perbaiki "auth session missing" (sesi lama ditolak server; sudah diverifikasi login ulang + pesan Indonesia)
+- [ ] Deploy ke Vercel — menunggu pengguna menyambungkan repo GitHub di Pengaturan Proyek → Git, lalu impor ke Vercel
