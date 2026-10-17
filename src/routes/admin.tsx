@@ -28,9 +28,23 @@ function AdminPage() {
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => setSession(data.session));
+    let alive = true;
+    // The stored session must be validated server-side: a token revoked by an
+    // email or password change still sits in localStorage, and using it makes
+    // every save fail with "Auth session missing!".
+    supabase.auth.getUser().then(({ data, error }) => {
+      if (!alive) return;
+      const status = (error as { status?: number } | null)?.status;
+      const revoked = !!error && (status === 401 || status === 403 || /session|token/i.test(error.message));
+      if (revoked || !data.user) {
+        supabase.auth.signOut();
+        setSession(null);
+        return;
+      }
+      supabase.auth.getSession().then(({ data: d }) => setSession(d.session));
+    });
     const { data } = supabase.auth.onAuthStateChange((_e, s) => setSession(s));
-    return () => data.subscription.unsubscribe();
+    return () => { alive = false; data.subscription.unsubscribe(); };
   }, []);
 
   useEffect(() => {
