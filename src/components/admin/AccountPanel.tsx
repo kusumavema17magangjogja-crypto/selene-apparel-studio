@@ -11,6 +11,10 @@ const inputCls = "w-full rounded-lg border bg-background px-3 py-2 text-sm outli
 export function describeAuthError(raw: string): string {
   if (/session/i.test(raw)) return "Sesi Anda sudah tidak aktif. Silakan keluar lalu masuk lagi, lalu coba simpan kembali.";
   if (/weak|easily guessed/i.test(raw)) return "Password terlalu mudah ditebak. Gunakan kombinasi huruf, angka, dan simbol yang unik.";
+  if (/at least 6|too short/i.test(raw)) return "Password minimal 6 karakter.";
+  if (/different from the old/i.test(raw)) return "Password baru harus berbeda dari password lama.";
+  if (/current password|invalid.*credential/i.test(raw)) return "Password saat ini salah.";
+  if (/rate limit|too many/i.test(raw)) return "Terlalu banyak percobaan. Tunggu beberapa menit lalu coba lagi.";
   return raw;
 }
 
@@ -55,6 +59,12 @@ export function AccountPanel({ email }: { email: string }) {
     if (password !== confirmation) return void toast.error("Konfirmasi password tidak cocok");
     setBusyPassword(true);
     try {
+      const { data: s } = await supabase.auth.getSession();
+      if (!s.session) {
+        toast.error("Sesi Anda telah kedaluwarsa. Silakan login kembali");
+        await supabase.auth.signOut();
+        return;
+      }
       const { error } = await supabase.auth.updateUser({ password, current_password: currentPassword });
       if (error) return void toast.error(describeAuthError(error.message));
       toast.success("Password berhasil diperbarui");

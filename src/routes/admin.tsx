@@ -67,9 +67,18 @@ function Login() {
   const [email, setEmail] = useState("");
   const [pw, setPw] = useState("");
   const [busy, setBusy] = useState(false);
+  const [forgot, setForgot] = useState(false);
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true);
+    if (forgot) {
+      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), { redirectTo: `${window.location.origin}/reset-password` });
+      setBusy(false);
+      if (error) return void toast.error(/rate|too many/i.test(error.message) ? "Terlalu banyak permintaan. Coba lagi beberapa menit lagi." : "Gagal mengirim tautan. Periksa email lalu coba lagi.");
+      toast.success("Tautan pemulihan kata sandi telah dikirim ke email Anda. Silakan periksa kotak masuk/spam.");
+      setForgot(false);
+      return;
+    }
     const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password: pw });
     setBusy(false);
     if (error) toast.error("Login gagal: email atau password salah");
@@ -79,12 +88,13 @@ function Login() {
       <form onSubmit={submit} className="w-full max-w-sm space-y-5 rounded-2xl border bg-card p-8 shadow-xl">
         <div className="text-center">
           <div className="mx-auto grid h-12 w-12 place-items-center rounded-xl bg-primary text-primary-foreground"><Lock className="h-5 w-5" /></div>
-          <h1 className="mt-4 text-2xl font-semibold">Portal Staf</h1>
-          <p className="text-sm text-muted-foreground">Masuk untuk mengelola konten Selene Apparel</p>
+          <h1 className="mt-4 text-2xl font-semibold">{forgot ? "Lupa Password" : "Portal Staf"}</h1>
+          <p className="text-sm text-muted-foreground">{forgot ? "Masukkan email admin untuk menerima tautan reset" : "Masuk untuk mengelola konten Selene Apparel"}</p>
         </div>
         <div><label className="mb-1 block text-sm font-medium">Email</label><input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className="w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-primary" /></div>
-        <div><label className="mb-1 block text-sm font-medium">Password</label><input type="password" required value={pw} onChange={(e) => setPw(e.target.value)} className="w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-primary" /></div>
-        <button disabled={busy} className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary py-2.5 font-semibold text-primary-foreground hover:bg-primary-strong disabled:opacity-60">{busy && <Loader2 className="h-4 w-4 animate-spin" />} Masuk</button>
+        {!forgot && <div><label className="mb-1 block text-sm font-medium">Password</label><input type="password" required value={pw} onChange={(e) => setPw(e.target.value)} className="w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-primary" /></div>}
+        <button disabled={busy} className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary py-2.5 font-semibold text-primary-foreground hover:bg-primary-strong disabled:opacity-60">{busy && <Loader2 className="h-4 w-4 animate-spin" />} {forgot ? "Kirim Link Reset" : "Masuk"}</button>
+        <button type="button" onClick={() => setForgot(!forgot)} className="block w-full text-center text-sm font-medium text-primary hover:underline">{forgot ? "← Kembali ke login" : "Lupa password?"}</button>
         <Link to="/" className="block text-center text-sm text-muted-foreground hover:text-primary">← Kembali ke situs</Link>
       </form>
     </div>
